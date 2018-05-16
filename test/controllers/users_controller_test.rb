@@ -5,6 +5,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = users(:gary)
     @other_user = users(:nose)
+    @unactivated = users(:unactivated)
   end
   
   test "should get new" do
@@ -86,5 +87,16 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       delete user_path(@user)
     end
     assert_redirected_to root_url
+  end
+  
+  test "should only show user when user is activated" do
+    log_in_as(@user)
+    
+    get user_path(@other_user)
+    assert_template 'users/show'
+    
+    get user_path(@unactivated)
+    follow_redirect!
+    assert_template 'static_pages/home'
   end
 end
